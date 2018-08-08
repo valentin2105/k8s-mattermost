@@ -1,5 +1,6 @@
 [general]
 bot_name = "k8s-bot"
+kubectl_path = "/usr/local/bin/kubectl"
 
 [mattermost]
 host = "mattermost.org"

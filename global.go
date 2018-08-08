@@ -21,6 +21,7 @@ var debuggingChannel *model.Channel
 
 type Config struct {
 	host         string
+	kubectlPath  string
 	botName      string
 	channelName  string
 	teamName     string
@@ -46,8 +47,9 @@ func ParseConfig(config *toml.Tree) Config {
 		os.Exit(1)
 	}
 	conf := Config{
-		host:         config.Get("mattermost.host").(string),
 		botName:      config.Get("general.bot_name").(string),
+		kubectlPath:  config.Get("general.kubectl_path").(string),
+		host:         config.Get("mattermost.host").(string),
 		channelName:  config.Get("mattermost.channel_name").(string),
 		teamName:     config.Get("mattermost.team_name").(string),
 		userLogin:    config.Get("mattermost.user_login").(string),
