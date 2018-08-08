@@ -1,0 +1,10 @@
+[general]
+bot_name = "k8s-bot"
+
+[mattermost]
+host = "mattermost.org"
+channel_name = "kubernetes"
+team_name = "your-team"
+user_login = "bot@email.org"
+user_password = "averystr0ngpassw0rd"
+
