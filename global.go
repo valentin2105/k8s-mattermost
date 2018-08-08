@@ -59,6 +59,7 @@ func ParseConfig(config *toml.Tree) Config {
 	return conf
 }
 
+// MakeSureServerIsRunning ensure the server is running
 func MakeSureServerIsRunning() {
 	if props, resp := client.GetOldClientConfig(""); resp.Error != nil {
 		println("There was a problem pinging the Mattermost server.  Are you sure it's running?")
@@ -69,6 +70,7 @@ func MakeSureServerIsRunning() {
 	}
 }
 
+// LoginAsTheBotUser login as the bot
 func LoginAsTheBotUser(email string, password string) {
 	if user, resp := client.Login(email, password); resp.Error != nil {
 		println("There was a problem logging into the Mattermost server.  Are you sure ran the setup steps from the README.md?")
@@ -79,6 +81,7 @@ func LoginAsTheBotUser(email string, password string) {
 	}
 }
 
+// FindBotTeam is use to find the team
 func FindBotTeam(teamName string) {
 	if team, resp := client.GetTeamByName(teamName, ""); resp.Error != nil {
 		println("We failed to get the initial load")
@@ -90,6 +93,7 @@ func FindBotTeam(teamName string) {
 	}
 }
 
+// CreateBotDebuggingChannelIfNeeded create the channel
 func CreateBotDebuggingChannelIfNeeded(channelName string) {
 	if rchannel, resp := client.GetChannelByName(channelName, botTeam.Id, ""); resp.Error != nil {
 		println("We failed to get the channels")
@@ -115,6 +119,7 @@ func CreateBotDebuggingChannelIfNeeded(channelName string) {
 	}
 }
 
+// SendMsgToDebuggingChannel send msg if its ok
 func SendMsgToDebuggingChannel(msg string, replyToID string) {
 	post := &model.Post{}
 	post.ChannelId = debuggingChannel.Id
@@ -128,10 +133,12 @@ func SendMsgToDebuggingChannel(msg string, replyToID string) {
 	}
 }
 
+// HandleWebSocketResponse handle the socket
 func HandleWebSocketResponse(event *model.WebSocketEvent) {
 	HandleMsgFromDebuggingChannel(event)
 }
 
+// HandleMsgFromDebuggingChannel handle the msg
 func HandleMsgFromDebuggingChannel(event *model.WebSocketEvent) {
 	// If this isn't the debugging channel then lets ingore it
 	if event.Broadcast.ChannelId != debuggingChannel.Id {
@@ -198,6 +205,7 @@ func HandleMsgFromDebuggingChannel(event *model.WebSocketEvent) {
 	//SendMsgToDebuggingChannel("I did not understand you!", post.Id)
 }
 
+// PrintError print the connexions error
 func PrintError(err *model.AppError) {
 	println("\tError Details:")
 	println("\t\t" + err.Message)
@@ -205,6 +213,7 @@ func PrintError(err *model.AppError) {
 	println("\t\t" + err.DetailedError)
 }
 
+// SetupGracefulShutdown preapre the graceful shut
 func SetupGracefulShutdown(botName string) {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)

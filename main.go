@@ -10,9 +10,12 @@ import (
 const (
 	// KubeWord - The Word that trigger the bot.
 	KubeWord = "!k"
+	// Version is the app version
+	Version = "0.1.0"
 )
 
 var (
+	// ValidVerbs is the list of the valids verbs of Kubernetes
 	ValidVerbs = []string{"get", "scale", "exec", "describe", "label", "annotate", "version", "logs", "rollout", "config"}
 	configPath = flag.String("config", "config.toml", "Config file path")
 )
