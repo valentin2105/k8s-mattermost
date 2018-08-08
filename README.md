@@ -22,5 +22,32 @@ user_password = "averystr0ngpassw0rd"
 
 You can load a different config file using the `-c ` flag. 
 
+
+### Install
+
+You can fetch the latest build for Linux :
+```
+wget https://github.com/valentin2105/k8s-mattermost/releases/download/v0.1.0/k8s-mattermost
+chmod +x k8s-mattermost 
+./k8s-mattermost -c config.toml
+```
+
+Or build it from the repo : 
+
+```
+# Install dep
+curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+
+# Clone repo
+mkdir -p $GOPATH/src/github.com/valentin2105/ && cd $GOPATH/src/github.com/valentin2105/
+git clone git@github.com:valentin2105/k8s-mattermost.git && cd k8s-mattermost 
+
+# Install dependencies
+dep ensure
+
+# Build
+go build
+```
+
 ### Screenshot
 ![](https://i.imgur.com/6eFvItT.png)
