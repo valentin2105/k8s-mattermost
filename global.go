@@ -19,6 +19,7 @@ var botUser *model.User
 var botTeam *model.Team
 var debuggingChannel *model.Channel
 
+// Config is a struc of config
 type Config struct {
 	host         string
 	kubectlPath  string
@@ -43,7 +44,7 @@ func LoadConfig(ConfigPath string) *toml.Tree {
 func ParseConfig(config *toml.Tree) Config {
 	keysArray := config.Keys()
 	if StringInSlice("general", keysArray) == false {
-		fmt.Printf("%s %s\n", "The config file don't get any [general] section in", &configPath)
+		fmt.Printf("%s %s\n", "The config file don't get any [general] section in", *configPath)
 		os.Exit(1)
 	}
 	conf := Config{
@@ -68,8 +69,8 @@ func MakeSureServerIsRunning() {
 	}
 }
 
-func LoginAsTheBotUser(USER_EMAIL string, USER_PASSWORD string) {
-	if user, resp := client.Login(USER_EMAIL, USER_PASSWORD); resp.Error != nil {
+func LoginAsTheBotUser(email string, password string) {
+	if user, resp := client.Login(email, password); resp.Error != nil {
 		println("There was a problem logging into the Mattermost server.  Are you sure ran the setup steps from the README.md?")
 		PrintError(resp.Error)
 		os.Exit(1)
@@ -78,10 +79,10 @@ func LoginAsTheBotUser(USER_EMAIL string, USER_PASSWORD string) {
 	}
 }
 
-func FindBotTeam(TEAM_NAME string) {
-	if team, resp := client.GetTeamByName(TEAM_NAME, ""); resp.Error != nil {
+func FindBotTeam(teamName string) {
+	if team, resp := client.GetTeamByName(teamName, ""); resp.Error != nil {
 		println("We failed to get the initial load")
-		println("or we do not appear to be a member of the team '" + TEAM_NAME + "'")
+		println("or we do not appear to be a member of the team '" + teamName + "'")
 		PrintError(resp.Error)
 		os.Exit(1)
 	} else {
@@ -89,8 +90,8 @@ func FindBotTeam(TEAM_NAME string) {
 	}
 }
 
-func CreateBotDebuggingChannelIfNeeded(CHANNEL_LOG_NAME string) {
-	if rchannel, resp := client.GetChannelByName(CHANNEL_LOG_NAME, botTeam.Id, ""); resp.Error != nil {
+func CreateBotDebuggingChannelIfNeeded(channelName string) {
+	if rchannel, resp := client.GetChannelByName(channelName, botTeam.Id, ""); resp.Error != nil {
 		println("We failed to get the channels")
 		PrintError(resp.Error)
 	} else {
@@ -100,29 +101,29 @@ func CreateBotDebuggingChannelIfNeeded(CHANNEL_LOG_NAME string) {
 
 	// Looks like we need to create the logging channel
 	channel := &model.Channel{}
-	channel.Name = CHANNEL_LOG_NAME
-	channel.DisplayName = "Debugging For Sample Bot"
-	channel.Purpose = "This is used as a test channel for logging bot debug messages"
+	channel.Name = channelName
+	channel.DisplayName = channelName
+	channel.Purpose = "This is used as a channel for Kubernetes interactions"
 	channel.Type = model.CHANNEL_OPEN
 	channel.TeamId = botTeam.Id
 	if rchannel, resp := client.CreateChannel(channel); resp.Error != nil {
-		println("We failed to create the channel " + CHANNEL_LOG_NAME)
+		println("We failed to create the channel " + channelName)
 		PrintError(resp.Error)
 	} else {
 		debuggingChannel = rchannel
-		println("Looks like this might be the first run so we've created the channel " + CHANNEL_LOG_NAME)
+		println("Looks like this might be the first run so we've created the channel " + channelName)
 	}
 }
 
-func SendMsgToDebuggingChannel(msg string, replyToId string) {
+func SendMsgToDebuggingChannel(msg string, replyToID string) {
 	post := &model.Post{}
 	post.ChannelId = debuggingChannel.Id
 	post.Message = msg
 
-	post.RootId = replyToId
+	post.RootId = replyToID
 
 	if _, resp := client.CreatePost(post); resp.Error != nil {
-		println("We failed to send a message to the logging channel")
+		println("We failed to send a message to the channel")
 		PrintError(resp.Error)
 	}
 }
@@ -153,11 +154,14 @@ func HandleMsgFromDebuggingChannel(event *model.WebSocketEvent) {
 		if matched, _ := regexp.MatchString(KubeWord, post.Message); matched {
 			words := strings.Fields(post.Message)
 			cmd := CheckBeforeExec(words, post.Message)
-			cmdOut := ExecKubectl(cmd)
-			if cmdOut != "null" && len(cmdOut) > 0 {
+			if cmd != "null" {
 				println("responding to -> ", post.Message)
-				SendMsgToDebuggingChannel(cmdOut, post.Id)
-				return
+				cmdOut := ExecKubectl(cmd)
+				if cmdOut != "null" && len(cmdOut) > 0 {
+					SendMsgToDebuggingChannel(cmdOut, post.Id)
+					return
+				}
+
 			}
 		}
 
@@ -201,7 +205,7 @@ func PrintError(err *model.AppError) {
 	println("\t\t" + err.DetailedError)
 }
 
-func SetupGracefulShutdown(BOT_NAME string) {
+func SetupGracefulShutdown(botName string) {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	go func() {
@@ -210,7 +214,7 @@ func SetupGracefulShutdown(BOT_NAME string) {
 				webSocketClient.Close()
 			}
 
-			SendMsgToDebuggingChannel("_"+BOT_NAME+" has **stopped** running_", "")
+			SendMsgToDebuggingChannel("_"+botName+" has **stopped** running_", "")
 			os.Exit(0)
 		}
 	}()
@@ -230,7 +234,11 @@ func StringInSlice(a string, list []string) bool {
 func CheckBeforeExec(words []string, lastmsg string) string {
 	cmd := "null"
 	if words[0] == KubeWord && len(words) >= 3 {
-		cmd = strings.Replace(lastmsg, KubeWord, "/usr/local/bin/kubectl -n", -1)
+
+		confToml := LoadConfig(*configPath)
+		conf := ParseConfig(confToml)
+		kubectlAndNs := fmt.Sprintf(conf.kubectlPath + " -n")
+		cmd = strings.Replace(lastmsg, KubeWord, kubectlAndNs, -1)
 
 		// If it contain "all" namespace
 		if words[1] == "all" {
