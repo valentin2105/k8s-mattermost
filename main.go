@@ -19,6 +19,7 @@ var (
 
 // doc at https://godoc.org/github.com/mattermost/platform/model#Client
 func main() {
+	flag.Parse()
 	BOT_NAME := "Kubernetes bot"
 
 	SetupGracefulShutdown(BOT_NAME)
