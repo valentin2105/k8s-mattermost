@@ -1,0 +1,68 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Values.pod }}-clusterrole
+rules:
+rules:
+  -
+    apiGroups:
+      - ""
+      - apps
+      - autoscaling
+      - batch
+      - extensions
+      - policy
+      - rbac.authorization.k8s.io
+    resources:
+      - componentstatuses
+      - configmaps
+      - daemonsets
+      - deployments
+      - events
+      - endpoints
+      - horizontalpodautoscalers
+      - ingress
+      - jobs
+      - limitranges
+      - namespaces
+      - nodes
+      - pods
+      - persistentvolumes
+      - persistentvolumeclaims
+      - resourcequotas
+      - replicasets
+      - replicationcontrollers
+      - serviceaccounts
+      - services
+    verbs:
+      - get
+      - watch
+      - list
+      - describe
+      - logs
+      - scale
+      - rollout
+      - run
+  - nonResourceURLs: ["*"]
+    verbs:
+      - get
+      - watch
+      - list
+      - describe
+      - logs
+      - scale
+      - rollout
+      - run
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .Values.pod }}-clusterrolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ .Values.pod }}-clusterrole
+subjects:
+- kind: ServiceAccount
+  name: k8s-bot
+  namespace: {{ .Release.Namespace }}

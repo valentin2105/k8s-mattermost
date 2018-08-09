@@ -1,0 +1,3 @@
+pod: k8s-mattermost
+image: valentinnc/k8s-mattermost:latest
+serviceAccount: k8s-mattermost
