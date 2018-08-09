@@ -19,6 +19,18 @@ var botUser *model.User
 var botTeam *model.Team
 var debuggingChannel *model.Channel
 
+//Splash is a splash
+const Splash = `
+
+┬┌─┬ ┬┌┐ ┌─┐┬─┐┌┐┌┌─┐┌┬┐┌─┐┌─┐
+├┴┐│ │├┴┐├┤ ├┬┘│││├┤  │ ├┤ └─┐
+┴ ┴└─┘└─┘└─┘┴└─┘└┘└─┘ ┴ └─┘└─┘
+┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌┬┐┌─┐┌─┐┌┬┐
+│││├─┤ │  │ ├┤ ├┬┘││││ │└─┐ │ 
+┴ ┴┴ ┴ ┴  ┴ └─┘┴└─┴ ┴└─┘└─┘ ┴ 
+
+`
+
 // Config is a struc of config
 type Config struct {
 	host         string
@@ -66,7 +78,7 @@ func MakeSureServerIsRunning() {
 		PrintError(resp.Error)
 		os.Exit(1)
 	} else {
-		println("Server detected and is running version " + props["Version"])
+		println("Server detected and is running version " + props["Version"] + "\n")
 	}
 }
 
@@ -161,13 +173,19 @@ func HandleMsgFromDebuggingChannel(event *model.WebSocketEvent) {
 		if matched, _ := regexp.MatchString(KubeWord, post.Message); matched {
 			words := strings.Fields(post.Message)
 			cmd := CheckBeforeExec(words, post.Message)
-			if cmd != "null" {
-				println("responding to -> ", post.Message)
+			if len(cmd) > 0 && cmd != "command forbidden" {
+				fmt.Printf("responding to -> %s", post.Message)
 				cmdOut := ExecKubectl(cmd)
-				if cmdOut != "null" && len(cmdOut) > 0 {
+				if cmdOut != "" && len(cmdOut) > 0 {
 					SendMsgToDebuggingChannel(cmdOut, post.Id)
+					fmt.Printf(" <- Sent. \n")
 					return
 				}
+
+			}
+			if cmd == "command forbidden" {
+				SendMsgToDebuggingChannel(cmd, post.Id)
+				return
 
 			}
 		}
@@ -241,7 +259,7 @@ func StringInSlice(a string, list []string) bool {
 
 // CheckBeforeExec - Check stuffs before exec.
 func CheckBeforeExec(words []string, lastmsg string) string {
-	cmd := "null"
+	var cmd string
 	if words[0] == KubeWord && len(words) >= 3 {
 
 		confToml := LoadConfig(*configPath)
@@ -255,17 +273,17 @@ func CheckBeforeExec(words []string, lastmsg string) string {
 		}
 
 		if !StringInSlice(words[2], ValidVerbs) {
-			fmt.Printf("-> Error, command unavailable %+v \n", cmd)
-			cmd = "null"
+			fmt.Printf("error ->  command unavailable <- %+v \n", lastmsg)
+			cmd = "command forbidden"
 		}
 		// Match TRUSTED words (get, scale ...)
 		if words[2] == "logs" && StringInSlice("-f", words) {
-			fmt.Printf("-> Error, command unavailable %+v \n", cmd)
-			cmd = "null"
+			fmt.Printf("error ->  command unavailable <- %+v \n", lastmsg)
+			cmd = "command forbidden"
 		}
 		if words[2] == "exec" && StringInSlice("-it", words) {
-			fmt.Printf("-> Error, command unavailable %+v \n", cmd)
-			cmd = "null"
+			fmt.Printf("error ->  command unavailable <- %+v \n", lastmsg)
+			cmd = "command forbidden"
 		}
 	}
 	return cmd

@@ -23,6 +23,7 @@ var (
 // doc at https://godoc.org/github.com/mattermost/platform/model#Client
 func main() {
 	flag.Parse()
+	fmt.Print(Splash)
 	confToml := LoadConfig(*configPath)
 	conf := ParseConfig(confToml)
 	SetupGracefulShutdown(conf.botName)
