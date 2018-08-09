@@ -1,4 +1,6 @@
 # k8s-mattermost
+[![Go Report Card](https://goreportcard.com/badge/github.com/valentin2105/k8s-mattermost)](https://goreportcard.com/report/github.com/valentin2105/k8s-mattermost)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/dwyl/esta/issues)
 
 ### What is it ?
 **k8s-mattermost** is a bot in Golang that connect on a channel's websocket and watch for commands. 
