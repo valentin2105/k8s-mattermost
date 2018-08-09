@@ -3,7 +3,7 @@
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/dwyl/esta/issues)
 
 ### What is it ?
-**k8s-mattermost** is a bot in Golang that connect on a channel's websocket and watch for commands. 
+**k8s-mattermost** is a bot in Golang that connects to a channel's websocket and watches for commands. 
 
 By default, you can trigger the bot with `!k <namespace> <verb> <ressource>` :
 
@@ -16,7 +16,7 @@ By default, you can trigger the bot with `!k <namespace> <verb> <ressource>` :
 
 ```
 
-The configuration is present in the `config.toml.dist` file (rename to `config.toml`) : 
+The configuration is located in the `config.toml.dist` file (you should rename it to `config.toml`) : 
 
 ```
 [general]
@@ -34,16 +34,16 @@ user_password = "averystr0ngpassw0rd"
 You can load a different config file using the `-c ` flag. 
 
 
-### How to run it ?
+### How can you run it ?
 
-You can fetch the latest build for Linux :
+You can fetch the latest build for Linux with :
 ```
 wget https://github.com/valentin2105/k8s-mattermost/releases/download/v0.1.0/k8s-mattermost
 chmod +x k8s-mattermost 
 ./k8s-mattermost -c config.toml
 ```
 
-Or build it from the repo : 
+Or build it from source : 
 
 ```
 # Install dep
