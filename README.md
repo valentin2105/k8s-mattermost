@@ -1,9 +1,18 @@
 # k8s-mattermost
 
-### Infos
+### What is it ?
 **k8s-mattermost** is a bot in Golang that connect on a channel's websocket and watch for commands. 
 
-By default, you can trigger the bot with `!k <namespace> <verb> <ressource> -- !k default get pod `
+By default, you can trigger the bot with `!k <namespace> <verb> <ressource>` :
+
+```
+!k - get cs
+
+!k kube-system get deploy
+
+!k all get pod
+
+```
 
 The configuration is present in the `config.toml.dist` file (rename to `config.toml`) : 
 
@@ -23,7 +32,7 @@ user_password = "averystr0ngpassw0rd"
 You can load a different config file using the `-c ` flag. 
 
 
-### Install
+### How to run it ?
 
 You can fetch the latest build for Linux :
 ```
