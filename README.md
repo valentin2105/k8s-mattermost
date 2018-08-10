@@ -3,7 +3,7 @@
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/dwyl/esta/issues)
 
 ### What is it ?
-**k8s-mattermost** is a bot in Golang that connects to a channel's websocket and watches for commands. 
+**k8s-mattermost** is a bot that connects to a Mattermost channel's websocket and watches for kubectl commands. 
 
 By default, you can trigger the bot with `!k <namespace> <verb> <ressource>` :
 
@@ -37,7 +37,7 @@ You can load a different config file using the `-c ` flag.
 
 You can fetch the latest build for Linux with :
 ```
-wget https://github.com/valentin2105/k8s-mattermost/releases/download/v0.1.0/k8s-mattermost
+wget https://github.com/valentin2105/k8s-mattermost/releases/download/v0.1.1/k8s-mattermost
 chmod +x k8s-mattermost 
 ./k8s-mattermost -c config.toml
 ```
@@ -59,17 +59,17 @@ valentinnc/k8s-mattermost
 Or build it from source : 
 
 ```
-# Install dep
+# install dep
 curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 
-# Clone repo
+# clone repo
 mkdir -p $GOPATH/src/github.com/valentin2105/ && cd $GOPATH/src/github.com/valentin2105/
 git clone git@github.com:valentin2105/k8s-mattermost.git && cd k8s-mattermost 
 
-# Install dependencies
+# fetch dependencies
 dep ensure
 
-# Build
+# build app
 go build
 ```
 
