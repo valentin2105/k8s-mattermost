@@ -23,7 +23,7 @@ bot_name = "k8s-bot"
 kubectl_path = "/usr/local/bin/kubectl"
 
 [mattermost]
-host = "mattermost.org"
+host = "your-mattermost.org"
 channel_name = "kubernetes"
 team_name = "your-team"
 user_login = "bot@email.org"
@@ -40,6 +40,20 @@ You can fetch the latest build for Linux with :
 wget https://github.com/valentin2105/k8s-mattermost/releases/download/v0.1.0/k8s-mattermost
 chmod +x k8s-mattermost 
 ./k8s-mattermost -c config.toml
+```
+
+Or run it using Docker :
+
+```
+docker run \
+-e K8S_API="https://k8s-api.url:6443" \
+-e K8S_TOKEN="yourClusterToken" \
+-e TEAM="your-team" \
+-e LOGIN="bot@email.org" \
+-e PASSWORD="averystr0ngpassw0rd" \
+-e SERVER="your-mattermost.org" \
+-e CHANNEL="your-channel" \
+valentinnc/k8s-mattermost
 ```
 
 Or build it from source : 

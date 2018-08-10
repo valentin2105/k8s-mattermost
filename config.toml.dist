@@ -3,8 +3,8 @@ bot_name = "k8s-bot"
 kubectl_path = "/usr/local/bin/kubectl"
 
 [mattermost]
-host = "mattermost.org"
-channel_name = "kubernetes"
+host = "your-mattermost.org"
+channel_name = "your-channel"
 team_name = "your-team"
 user_login = "bot@email.org"
 user_password = "averystr0ngpassw0rd"
