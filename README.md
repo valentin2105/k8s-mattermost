@@ -3,7 +3,7 @@
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/dwyl/esta/issues)
 
 ### What is it ?
-**k8s-mattermost** is a bot in Golang that connects to a channel's websocket and watches for commands. 
+**k8s-mattermost** is a botthat connects to a Mattermost channel's websocket and watches for kubectl commands. 
 
 By default, you can trigger the bot with `!k <namespace> <verb> <ressource>` :
 
