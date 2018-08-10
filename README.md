@@ -8,12 +8,11 @@
 By default, you can trigger the bot with `!k <namespace> <verb> <ressource>` :
 
 ```
-!k - get cs
+!k - get cs  # You can use "-" if ressource doesn't get namespace
 
 !k kube-system get deploy
 
-!k all get pod
-
+!k all get pod # You can use "all" to show all namespaces
 ```
 
 The configuration is located in the `config.toml.dist` file (you should rename it to `config.toml`) : 
