@@ -11,7 +11,7 @@ const (
 	// KubeWord - The Word that trigger the bot.
 	KubeWord = "!k"
 	// Version is the app version
-	Version = "0.1.0"
+	Version = "0.1.1"
 )
 
 var (
@@ -31,12 +31,9 @@ func main() {
 	client = model.NewAPIv4Client(url)
 	// Lets test to see if the mattermost server is up and running
 	MakeSureServerIsRunning()
-	// lets attempt to login to the Mattermost server as the bot user
-	// This will set the token required for all future calls
-	// You can get this token with client.AuthToken
+	// lets attempt to login to the Mattermost server as the bot user. This will set the token required for all future calls
 	LoginAsTheBotUser(conf.userLogin, conf.userPassword)
-	// If the bot user doesn't have the correct information lets update his profile
-	//UpdateTheBotUserIfNeeded()
+	// If the bot user doesn't have the correct information lets update his profile UpdateTheBotUserIfNeeded()
 	// Lets find our bot team
 	FindBotTeam(conf.teamName)
 	// Lets create a bot channel for logging debug messages into
@@ -58,6 +55,5 @@ func main() {
 			}
 		}
 	}()
-	// You can block forever with
 	select {}
 }

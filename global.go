@@ -172,9 +172,11 @@ func HandleMsgFromDebuggingChannel(event *model.WebSocketEvent) {
 
 		if matched, _ := regexp.MatchString(KubeWord, post.Message); matched {
 			words := strings.Fields(post.Message)
-			cmd := CheckBeforeExec(words, post.Message)
+			message := strings.TrimSpace(post.Message)
+			cmd := CheckBeforeExec(words, message)
 			if len(cmd) > 0 && cmd != "command forbidden" {
 				fmt.Printf("responding to -> %s", post.Message)
+
 				cmdOut := ExecKubectl(cmd)
 				if cmdOut != "" && len(cmdOut) > 0 {
 					SendMsgToDebuggingChannel(cmdOut, post.Id)
@@ -223,6 +225,47 @@ func HandleMsgFromDebuggingChannel(event *model.WebSocketEvent) {
 	//SendMsgToDebuggingChannel("I did not understand you!", post.Id)
 }
 
+// CheckBeforeExec - Check stuffs before exec.
+func CheckBeforeExec(words []string, lastmsg string) string {
+	var cmd string
+	if words[0] == KubeWord && len(words) >= 3 {
+		confToml := LoadConfig(*configPath)
+		conf := ParseConfig(confToml)
+		kubectlAndNs := fmt.Sprintf(conf.kubectlPath + " -n")
+		cmd = strings.Replace(lastmsg, KubeWord, kubectlAndNs, -1)
+		// If it contain "all" namespace
+		if words[1] == "all" {
+			cmd = cmd + " --all-namespaces"
+		}
+		if !StringInSlice(words[2], ValidVerbs) {
+			fmt.Printf("error ->  command unavailable <- %+v \n", lastmsg)
+			cmd = "command forbidden"
+		}
+		// Match TRUSTED words (get, scale ...)
+		if words[2] == "logs" && StringInSlice("-f", words) {
+			fmt.Printf("error ->  command unavailable <- %+v \n", lastmsg)
+			cmd = "command forbidden"
+		}
+		if words[2] == "exec" && StringInSlice("-it", words) {
+			fmt.Printf("error ->  command unavailable <- %+v \n", lastmsg)
+			cmd = "command forbidden"
+		}
+	}
+	return cmd
+}
+
+// ExecKubectl - Launch and format kubectl cmd.
+func ExecKubectl(cmd string) string {
+	var cl string
+	args := strings.Split(cmd, " ")
+	out, err := exec.Command(args[0], args[1:]...).Output()
+	if err == nil {
+		result := fmt.Sprintf("``` \n %s ```", out)
+		cl = strings.Replace(result, "\n\n", "\n", -1)
+	}
+	return cl
+}
+
 // PrintError print the connexions error
 func PrintError(err *model.AppError) {
 	println("\tError Details:")
@@ -255,48 +298,4 @@ func StringInSlice(a string, list []string) bool {
 		}
 	}
 	return false
-}
-
-// CheckBeforeExec - Check stuffs before exec.
-func CheckBeforeExec(words []string, lastmsg string) string {
-	var cmd string
-	if words[0] == KubeWord && len(words) >= 3 {
-
-		confToml := LoadConfig(*configPath)
-		conf := ParseConfig(confToml)
-		kubectlAndNs := fmt.Sprintf(conf.kubectlPath + " -n")
-		cmd = strings.Replace(lastmsg, KubeWord, kubectlAndNs, -1)
-
-		// If it contain "all" namespace
-		if words[1] == "all" {
-			cmd = cmd + " --all-namespaces"
-		}
-
-		if !StringInSlice(words[2], ValidVerbs) {
-			fmt.Printf("error ->  command unavailable <- %+v \n", lastmsg)
-			cmd = "command forbidden"
-		}
-		// Match TRUSTED words (get, scale ...)
-		if words[2] == "logs" && StringInSlice("-f", words) {
-			fmt.Printf("error ->  command unavailable <- %+v \n", lastmsg)
-			cmd = "command forbidden"
-		}
-		if words[2] == "exec" && StringInSlice("-it", words) {
-			fmt.Printf("error ->  command unavailable <- %+v \n", lastmsg)
-			cmd = "command forbidden"
-		}
-	}
-	return cmd
-}
-
-// ExecKubectl - Launch and format kubectl cmd.
-func ExecKubectl(cmd string) string {
-	var cl string
-	args := strings.Split(cmd, " ")
-	out, err := exec.Command(args[0], args[1:]...).Output()
-	if err == nil {
-		result := fmt.Sprintf("``` \n %s ```", out)
-		cl = strings.Replace(result, "\n\n", "\n", -1)
-	}
-	return cl
 }
