@@ -1,11 +1,11 @@
 #!/bin/bash
 
-if [ ! -z "$KUBERNETES_TOKEN" ]; then
-	K8S_TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+if [ -z "$K8S_TOKEN" ]; then
+	export K8S_TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
 fi
 
 if [ ! -z "$KUBERNETES_SERVICE_HOST" ]; then
-	K8S_API="https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT"
+	export K8S_API="https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT"
 fi
 
 
