@@ -64,7 +64,7 @@ curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 
 # clone repo
 mkdir -p $GOPATH/src/github.com/valentin2105/ && cd $GOPATH/src/github.com/valentin2105/
-git clone git@github.com:valentin2105/k8s-mattermost.git && cd k8s-mattermost 
+git clone https://github.com/valentin2105/k8s-mattermost.git && cd k8s-mattermost 
 
 # fetch dependencies
 dep ensure
