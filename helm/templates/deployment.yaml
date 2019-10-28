@@ -22,3 +22,16 @@ spec:
       - image: {{ .Values.image }}
         name: {{ .Values.pod }}
         imagePullPolicy: Always
+        env: 
+        - name: K8S_API
+          value: {{ .Values.K8S_API }}
+        - name: TEAM
+          value: {{ .Values.TEAM }}
+        - name: LOGIN
+          value: {{ .Values.LOGIN }}
+        - name: PASSWORD
+          value: {{ .Values.PASSWORD }}
+        - name: SERVER
+          value: {{ .Values.SERVER }}
+        - name: CHANNEL
+          value: {{ .Values.CHANNEL }}

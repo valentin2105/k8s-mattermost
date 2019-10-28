@@ -64,5 +64,5 @@ roleRef:
   name: {{ .Values.pod }}-clusterrole
 subjects:
 - kind: ServiceAccount
-  name: k8s-bot
+  name: {{ .Values.serviceAccount }}
   namespace: {{ .Release.Namespace }}

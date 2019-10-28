@@ -10,10 +10,10 @@ fi
 
 
 kubectl config set-cluster k8s --server=$K8S_API --insecure-skip-tls-verify=true
-kubectl config set-credentials scheduler --token=$K8S_TOKEN
-kubectl config set-context default-context --cluster=k8s --user=scheduler
+kubectl config set-credentials k8s-mattermost --token=$K8S_TOKEN
+kubectl config set-context default-context --cluster=k8s --user=k8s-mattermost
 kubectl config use-context default-context
-kubectl get cs
+kubectl get pod 
 
 sed -i "s/your-mattermost.org/$SERVER/g" config.toml.dist
 sed -i "s/your-channel/$CHANNEL/g" config.toml.dist
