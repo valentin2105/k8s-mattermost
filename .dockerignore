@@ -1,6 +1,4 @@
-config.toml
-helm
 vendor/
-Dockerfile
-LICENSE
-README.md
+config.toml
+helm/values.yaml
+k8s-mattermost

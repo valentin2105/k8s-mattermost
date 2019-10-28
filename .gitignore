@@ -1,3 +1,4 @@
 vendor/
 config.toml
+helm/values.yaml
 k8s-mattermost
