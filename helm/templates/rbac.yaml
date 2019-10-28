@@ -18,10 +18,11 @@ rules:
       - configmaps
       - daemonsets
       - deployments
+      - deployments/scale
       - events
       - endpoints
       - horizontalpodautoscalers
-      - ingress
+      - ingresses
       - jobs
       - limitranges
       - namespaces
@@ -42,6 +43,7 @@ rules:
       - logs
       - scale
       - rollout
+      - patch
       - run
   - nonResourceURLs: ["*"]
     verbs:
@@ -53,6 +55,7 @@ rules:
       - scale
       - rollout
       - run
+      - patch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
